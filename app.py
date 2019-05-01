@@ -49,7 +49,13 @@ def login():
         if len(result) == 0:
             return make_response('login failed', 400)
         if result[0]['password'] == password :
-            return jsonify(result)
+            
+            with conn.cursor() as c:
+                sql = 'select * from spot where user = %s'
+                c.execute(sql, username)
+                spot_res = c.fetchall()
+                return jsonify(spot_res)
+
         else :
             return make_response('login failed', 400)
 
