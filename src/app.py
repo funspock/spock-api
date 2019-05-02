@@ -16,7 +16,6 @@ usr = os.environ.get("USR")
 passwd = os.environ.get("PASSWD")
 db = os.environ.get("DB")
 
-print(host)
 
 conn = pymysql.connect(host = host,
                         user = usr,
