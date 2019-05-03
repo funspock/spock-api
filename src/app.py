@@ -2,6 +2,7 @@ import os
 from os.path import join, dirname
 from dotenv import load_dotenv
 from flask import Flask, jsonify, make_response, request
+import boto3
 
 import pymysql.cursors
 
@@ -15,6 +16,16 @@ host = os.environ.get("HST")
 usr = os.environ.get("USR")
 passwd = os.environ.get("PASSWD")
 db = os.environ.get("DB")
+access_key = os.environ.get("AWS_ACCESS_KEY")
+secret_key = os.environ.get("AWS_SECRET_ACCESS_KEY")
+bucket_name = os.environ.get("BUCKET_NAME")
+
+s3 = boto3.client('s3',
+    aws_access_key_id = access_key,
+    aws_secret_access_key = secret_key,
+)
+
+s3.list_buckets()
 
 
 conn = pymysql.connect(host = host,
@@ -53,12 +64,31 @@ def login():
         else :
             return make_response('login failed', 400)
 
-'''
-@app.route("/api/spot", methods = ['POST'])
+
+@app.route("/api/post", methods = ['POST'])
 def post_spot():
-     
-     name = request.json[]
-'''
+    
+    img = request.files['img']
+    username = request.form['username']
+    
+    try:
+        s3.upload_fileobj(
+            img,
+            bucket_name,
+            username + '/' + img.filename,
+            ExtraArgs = {
+                "ACL": "public-read",
+                "ContentType" : img.content_type
+            }
+        )
+
+        return 'https://s3.amazonaws.com/' + bucket_name + '/' + username + '/' + img.filename
+    
+    except Exception as e:
+        print('error', e)
+        return e
+
+
 
 
 
