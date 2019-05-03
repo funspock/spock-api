@@ -49,10 +49,12 @@ def login():
     with conn.cursor() as cursor:
         sql = 'select * from user_data where username = %s'
         cursor.execute(sql, username)
-
         result = cursor.fetchall()
+
+        #No username matched
         if len(result) == 0:
             return make_response('login failed', 400)
+
         if result[0]['password'] == password :
             
             with conn.cursor() as c:
@@ -74,6 +76,7 @@ def post_spot():
     username = request.form['username']
     
     try:
+        #upload posted image to S3
         s3.upload_fileobj(
             img,
             bucket_name,
@@ -84,17 +87,24 @@ def post_spot():
             }
         )
 
+        #image url in S3
         img_url = 'https://s3.amazonaws.com/' + bucket_name + '/' + username + '/' + img.filename
 
+        #insert spot_data
         with conn.cursor() as c:
             sql = 'insert into spot_data (name, memo, photo_url, user) values(%s, %s, %s, %s)'
             c.execute(sql, (spot_name, memo, img_url, username))
         conn.commit()
-        
-        return 'success'
+
+        #get inserted spot_data
+        with conn.cursor() as data:
+            sql = 'select * from spot_data where id = %s'
+            data.execute(sql, c.lastrowid)
+            res = data.fetchall()
+            return jsonify(res)
     
     except Exception as e:
-        return e
+        return make_response(e, 400)
 
 
 
