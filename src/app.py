@@ -56,7 +56,7 @@ def login():
         if result[0]['password'] == password :
             
             with conn.cursor() as c:
-                sql = 'select * from spot where user = %s'
+                sql = 'select * from spot_data where user = %s'
                 c.execute(sql, username)
                 spot_res = c.fetchall()
                 return jsonify(spot_res)
@@ -68,6 +68,8 @@ def login():
 @app.route("/api/post", methods = ['POST'])
 def post_spot():
     
+    spot_name = request.form['spot_name']
+    memo = request.form['memo']
     img = request.files['img']
     username = request.form['username']
     
@@ -82,10 +84,16 @@ def post_spot():
             }
         )
 
-        return 'https://s3.amazonaws.com/' + bucket_name + '/' + username + '/' + img.filename
+        img_url = 'https://s3.amazonaws.com/' + bucket_name + '/' + username + '/' + img.filename
+
+        with conn.cursor() as c:
+            sql = 'insert into spot_data (name, memo, photo_url, user) values(%s, %s, %s, %s)'
+            c.execute(sql, (spot_name, memo, img_url, username))
+        conn.commit()
+        
+        return 'success'
     
     except Exception as e:
-        print('error', e)
         return e
 
 
