@@ -66,6 +66,21 @@ def login():
         else :
             return make_response('login failed', 400)
 
+@app.route("/api/create_user", methods = ['POST'])
+def create_user():
+    username = request.json['username']
+    password = request.json['password']
+
+    try :
+        with conn.cursor() as cursor:
+            sql = 'insert into user_data values(%s, %s)'
+            cursor.execute(sql, (username, password))
+        
+        conn.commit()
+        return make_response('success', 200)
+
+    except Exception as e:
+        return make_response(e, 400)
 
 @app.route("/api/post", methods = ['POST'])
 def post_spot():
@@ -104,6 +119,7 @@ def post_spot():
             return jsonify(res)
     
     except Exception as e:
+        print(e)
         return make_response(e, 400)
 
 
@@ -111,4 +127,4 @@ def post_spot():
 
 
 if __name__ == '__main__':
-    app.run(host = '0.0.0.0', debug = True)
+    app.run(host = '0.0.0.0')
