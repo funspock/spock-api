@@ -85,7 +85,9 @@ def create_user():
             cursor.execute(sql, (username, password))
         
         conn.commit()
-        return make_response('success', 200)
+        return jsonify({
+            'message' : 'success',
+        })
 
     except Exception as e:
         return make_response(e, 400)
