@@ -3,8 +3,14 @@ from os.path import join, dirname
 from dotenv import load_dotenv
 from flask import Flask, jsonify, make_response, request
 import boto3
-
+from werkzeug import secure_filename
 import pymysql.cursors
+
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'gif','jpeg'])
+
+def allowed_file(filename):
+    return '.' in filename and \
+        filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
 app = Flask(__name__)
@@ -34,6 +40,8 @@ conn = pymysql.connect(host = host,
                         password = passwd,
                         cursorclass = pymysql.cursors.DictCursor
 )
+
+
 
 
 @app.route("/")
@@ -89,13 +97,16 @@ def post_spot():
     memo = request.form['memo']
     img = request.files['img']
     username = request.form['username']
+
+    if not (img.filename and allowed_file(img.filename)):
+        return make_response('image file is not supported', 400)
     
     try:
         #upload posted image to S3
         s3.upload_fileobj(
             img,
             bucket_name,
-            username + '/' + img.filename,
+            username + '/' + secure_filename(img.filename),
             ExtraArgs = {
                 "ACL": "public-read",
                 "ContentType" : img.content_type
@@ -104,6 +115,7 @@ def post_spot():
 
         #image url in S3
         img_url = 'https://s3.amazonaws.com/' + bucket_name + '/' + username + '/' + img.filename
+
 
         #insert spot_data
         with conn.cursor() as c:
@@ -127,4 +139,4 @@ def post_spot():
 
 
 if __name__ == '__main__':
-    app.run(host = '0.0.0.0')
+    app.run(host = '0.0.0.0', debug = True)
