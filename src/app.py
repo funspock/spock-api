@@ -6,7 +6,7 @@ import boto3
 from werkzeug import secure_filename
 import pymysql.cursors
 
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'gif','jpeg'])
+ALLOWED_EXTENSIONS = set(['jpg','jpeg'])
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -98,6 +98,8 @@ def post_spot():
     img = request.files['img']
     username = request.form['username']
 
+    
+
     print('-------------------------',img.content_type, '-----------------------------')
 
     if not (img.filename and allowed_file(img.filename)):
@@ -113,7 +115,7 @@ def post_spot():
             username + '/' + secure_filename(img.filename),
             ExtraArgs = {
                 "ACL": "public-read",
-                "ContentType" : img.content_type
+                "ContentType" : 'image/jpeg',
             }
         )
 
