@@ -101,6 +101,8 @@ def post_spot():
     if not (img.filename and allowed_file(img.filename)):
         return make_response('image file is not supported', 400)
     
+    print(img.content_type)
+
     try:
         #upload posted image to S3
         s3.upload_fileobj(
@@ -131,7 +133,7 @@ def post_spot():
             return jsonify(res)
     
     except Exception as e:
-        print(e)
+
         return make_response(e, 400)
 
 
@@ -139,4 +141,4 @@ def post_spot():
 
 
 if __name__ == '__main__':
-    app.run(host = '0.0.0.0', debug = True)
+    app.run(host = '0.0.0.0')
