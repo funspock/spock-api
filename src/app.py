@@ -98,13 +98,8 @@ def post_spot():
     img = request.files['img']
     username = request.form['username']
 
-    
-
-    print('-------------------------',img.content_type, '-----------------------------')
-
     if not (img.filename and allowed_file(img.filename)):
         return make_response('image file is not supported', 400)
-    
     
 
     try:
@@ -141,7 +136,31 @@ def post_spot():
         return make_response(e, 400)
 
 
+@app.route('/api/delete_spot', methods = ['POST'])
+def delete_spot():
+    item_id = request.json['item_id']
+    username = request.json['username']
 
+    try :
+        with conn.cursor() as data:
+            sql = 'select * from spot_data where id = %s'
+            data.execute(sql, item_id)
+            res = data.fetchall()
+        
+            if res[0]['user'] == username :
+                
+                with conn.cursor() as c : 
+                    del_sql = 'delete from spot_data where id = %s'
+                    c.execute(del_sql, item_id)
+                
+                conn.commit()
+                return make_response('success', 200)
+            
+            else :
+                return make_response('you did not create this data', 400)
+
+    except Exception as e :
+        return make_response(e, 400)
 
 
 if __name__ == '__main__':
