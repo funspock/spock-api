@@ -98,10 +98,12 @@ def post_spot():
     img = request.files['img']
     username = request.form['username']
 
+    print('-------------------------',img.content_type, '-----------------------------')
+
     if not (img.filename and allowed_file(img.filename)):
         return make_response('image file is not supported', 400)
     
-    print(img.content_type)
+    
 
     try:
         #upload posted image to S3
