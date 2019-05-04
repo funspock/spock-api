@@ -1,9 +1,47 @@
-host:ip/ [method = 'GET']
-接続できていたらyou requested flask api serverってでる
+	host:port/ [method = 'GET']
+	
+接続できていたらyou requested flask api serverってでる。
 
-host:ip/api/login [method = 'POST'] {'username':'ほげほげ', 'password':'ほげほげ'}
-一致するユーザが存在したら、そのユーザの保存したデータが返ってくる
-認証に失敗した場合、400が返ってくる
+	
+	host:port/api/login [method = 'POST']
 
-想定外のリクエストが投げられたらつらい。
+	{
+		'username':'ほげほげ', 
+		'password':'ほげほげ'
+	} 
+	Content-Type : application/json
+
+一致するユーザが存在したら、そのユーザの保存したデータが返ってくる。
+認証に失敗した場合、400が返ってくる。
+
+
+	host:port/api/post [method = 'POST'] 
+
+	{
+		'img' : jpegファイル,
+
+		'usernname' : 存在するユーザ, 
+ 
+		'memo' : 'メモ（NULL可)', 
+ 
+		'spot_name' : '場所の名前(Null不可)',
+ 
+	}
+	Content-Type : multipart/form-data
+	
+処理に成功した場合、データベースに保存されたデータが返ってくる。
+	
+	
+	host:port/api/create_user [method = 'POST']
+	{
+		'username' : 'ほげほげ',
+		'password' : 'ほげほげ',
+	}
+	Content-Type : application/json
+	
+被っているユーザ名が存在する場合400が返ってくる。
+登録に成功した場合、200が返ってくる。
+ 
+
+
 
