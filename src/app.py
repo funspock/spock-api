@@ -107,8 +107,7 @@ def post_spot():
     )
 
     if not (img.filename and allowed_file(img.filename)):
-        return make_response('image file is not supported', 400)
-    
+        return make_response('image file is not supported', 433)
 
     try:
         #upload posted image to S3
@@ -141,7 +140,7 @@ def post_spot():
     
     except Exception as e:
 
-        return make_response(e, 400)
+        return make_response(e, 443)
 
 
 @app.route('/api/delete_spot', methods = ['POST'])
