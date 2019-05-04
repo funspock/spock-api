@@ -17,16 +17,13 @@
 認証に失敗した場合、400が返ってくる。
 
 
-## データの保存
+## データの作成
 	host:port/api/post [method = 'POST'] 
 
 	{
 		'img' : jpegファイル,
-
 		'usernname' : 存在するユーザ, 
- 
 		'memo' : 'メモ（NULL可)', 
- 
 		'spot_name' : '場所の名前(Null不可)',
  
 	}
