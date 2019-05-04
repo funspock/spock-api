@@ -22,7 +22,7 @@
 
 	{
 		'img' : jpegファイル,
-		'usernname' : 存在するユーザ, 
+		'username' : 存在するユーザ, 
 		'memo' : 'メモ（Null可)', 
 		'spot_name' : '場所の名前(Null不可)',
  
