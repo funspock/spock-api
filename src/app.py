@@ -146,7 +146,10 @@ def delete_spot():
             sql = 'select * from spot_data where id = %s'
             data.execute(sql, item_id)
             res = data.fetchall()
-        
+
+            if len(res) == 0:
+                return make_response('item is not exist on server', 400)
+
             if res[0]['user'] == username :
                 
                 with conn.cursor() as c : 
