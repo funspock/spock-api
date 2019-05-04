@@ -34,6 +34,7 @@
 
 ## ユーザの作成
 	host:port/api/create_user [method = 'POST']
+	
 	{
 		'username' : 'ほげほげ',
 		'password' : 'ほげほげ',
