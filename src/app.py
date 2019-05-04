@@ -98,6 +98,14 @@ def post_spot():
     img = request.files['img']
     username = request.form['username']
 
+
+    print(
+        'spot_name', spot_name,
+        'memo', memo,
+        'img', img.filename,
+        'username', username
+    )
+
     if not (img.filename and allowed_file(img.filename)):
         return make_response('image file is not supported', 400)
     
