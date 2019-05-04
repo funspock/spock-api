@@ -5,5 +5,5 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - "./src:/projects/src"
+      - "./src:/projects/src:Z"
     command: python3 ./src/app.py
