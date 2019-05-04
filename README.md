@@ -1,10 +1,10 @@
-##接続確認
+## 接続確認
 	host:port/ [method = 'GET']
 	
 接続できていたらyou requested flask api serverってでる。
 
 	
-##ユーザ認証
+## ユーザ認証
 	host:port/api/login [method = 'POST']
 
 	{
@@ -17,7 +17,7 @@
 認証に失敗した場合、400が返ってくる。
 
 
-##データのポスト
+## データの保存
 	host:port/api/post [method = 'POST'] 
 
 	{
@@ -35,7 +35,7 @@
 処理に成功した場合、データベースに保存されたデータが返ってくる。
 	
 
-##ユーザの作成
+## ユーザの作成
 	host:port/api/create_user [method = 'POST']
 	{
 		'username' : 'ほげほげ',
