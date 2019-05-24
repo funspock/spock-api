@@ -53,26 +53,29 @@ def login():
 
     username = request.json['username']
     password = request.json['password']
-     
-    with conn.cursor() as cursor:
-        sql = 'select * from user_data where username = %s'
-        cursor.execute(sql, username)
-        result = cursor.fetchall()
 
-        #No username matched
-        if len(result) == 0:
-            return make_response('login failed', 400)
+    try:     
+        with conn.cursor() as cursor:
+            sql = 'select * from user_data where username = %s'
+            cursor.execute(sql, username)
+            result = cursor.fetchall()
 
-        if result[0]['password'] == password :
-            
-            with conn.cursor() as c:
-                sql = 'select * from spot_data where user = %s'
-                c.execute(sql, username)
-                spot_res = c.fetchall()
-                return jsonify(spot_res)
+            #No username matched
+            if len(result) == 0:
+                return make_response('login failed', 400)
 
-        else :
-            return make_response('login failed', 400)
+            if result[0]['password'] == password :
+                
+                with conn.cursor() as c:
+                    sql = 'select * from spot_data where user = %s'
+                    c.execute(sql, username)
+                    spot_res = c.fetchall()
+                    return jsonify(spot_res)
+
+            else :
+                return make_response('login failed', 400)
+    finally:
+        cursor.close()
 
 @app.route("/api/create_user", methods = ['POST'])
 def create_user():
@@ -89,6 +92,9 @@ def create_user():
             'message' : 'success',
         })
 
+    finally:
+        cursor.close()
+
     except Exception as e:
         return make_response(e, 400)
 
@@ -100,19 +106,11 @@ def post_spot():
     img = request.files['img']
     username = request.form['username']
 
-
-    print(
-        'spot_name', spot_name,
-        'memo', memo,
-        'img', img.filename,
-        'username', username
-    )
-
     if not (img.filename and allowed_file(img.filename)):
         return make_response('image file is not supported', 433)
 
     try:
-        #upload posted image to S3
+
         s3.upload_fileobj(
             img,
             bucket_name,
@@ -126,19 +124,24 @@ def post_spot():
         #image url in S3
         img_url = 'https://s3.amazonaws.com/' + bucket_name + '/' + username + '/' + img.filename
 
+        try:
+            #insert spot_data
+            with conn.cursor() as c:
+                sql = 'insert into spot_data (name, memo, photo_url, user) values(%s, %s, %s, %s)'
+                c.execute(sql, (spot_name, memo, img_url, username))
+            conn.commit()
+        finally:
+            c.close()
 
-        #insert spot_data
-        with conn.cursor() as c:
-            sql = 'insert into spot_data (name, memo, photo_url, user) values(%s, %s, %s, %s)'
-            c.execute(sql, (spot_name, memo, img_url, username))
-        conn.commit()
-
-        #get inserted spot_data
-        with conn.cursor() as data:
-            sql = 'select * from spot_data where id = %s'
-            data.execute(sql, c.lastrowid)
-            res = data.fetchall()
-            return jsonify(res)
+        try:
+            #get inserted spot_data
+            with conn.cursor() as data:
+                sql = 'select * from spot_data where id = %s'
+                data.execute(sql, c.lastrowid)
+                res = data.fetchall()
+                return jsonify(res)
+        finally:
+            data.close()
     
     except Exception as e:
 
@@ -148,7 +151,7 @@ def post_spot():
 @app.route('/api/delete_spot', methods = ['POST'])
 def delete_spot():
     item_id = request.json['item_id']
-    username = request.json['username']
+    username = request.json['username'] 
 
     try :
         with conn.cursor() as data:
@@ -170,6 +173,9 @@ def delete_spot():
             
             else :
                 return make_response('you did not create this data', 400)
+
+    finally:
+        data.close()
 
     except Exception as e :
         return make_response(e, 400)
