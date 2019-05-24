@@ -139,9 +139,7 @@ def post_spot():
                 return jsonify(res)
         finally:
             data.close()
-
-
-
+        
 @app.route('/api/delete_spot', methods = ['POST'])
 def delete_spot():
     item_id = request.json['item_id']
