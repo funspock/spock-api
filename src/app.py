@@ -94,7 +94,6 @@ def create_user():
 
     finally:
         cursor.close()
-
     except Exception as e:
         return make_response(e, 400)
 
@@ -142,7 +141,6 @@ def post_spot():
                 return jsonify(res)
         finally:
             data.close()
-    
     except Exception as e:
 
         return make_response(e, 443)
