@@ -94,8 +94,6 @@ def create_user():
 
     finally:
         cursor.close()
-    except Exception as e:
-        return make_response(e, 400)
 
 @app.route("/api/post", methods = ['POST'])
 def post_spot():
@@ -141,9 +139,7 @@ def post_spot():
                 return jsonify(res)
         finally:
             data.close()
-    except Exception as e:
 
-        return make_response(e, 443)
 
 
 @app.route('/api/delete_spot', methods = ['POST'])
@@ -174,9 +170,6 @@ def delete_spot():
 
     finally:
         data.close()
-
-    except Exception as e :
-        return make_response(e, 400)
 
 
 if __name__ == '__main__':
